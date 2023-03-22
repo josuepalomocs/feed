@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Header from "@/components/Layout/Header";
+import Feed from "@/components/Feed/Feed";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       </Head>
       <div className="min-h-screen max-w-screen bg-neutral-900 text-white">
         <Header />
+        <Feed />
       </div>
     </>
   );
