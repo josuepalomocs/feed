@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FeedPost } from "../../types";
 import axios from "axios";
+import he from "he";
 
 export default function useRedditPosts(subredditId: string) {
   const [redditPosts, setRedditPosts] = useState<FeedPost[]>([]);
@@ -8,7 +9,7 @@ export default function useRedditPosts(subredditId: string) {
   useEffect(() => {
     async function fetchRedditPosts(): Promise<FeedPost[]> {
       const response = await axios.get(
-        `api/reddit/subreddits/${subredditId}/hot`
+        `api/reddit/subreddits/${subredditId}/new`
       );
       const redditPostsUnsanitized = response.data.data.children;
       console.log(redditPostsUnsanitized);
@@ -27,13 +28,14 @@ export default function useRedditPosts(subredditId: string) {
           const redditPostImage = redditPostImages[index].source.url;
           imageHrefs.push(redditPostImage.replace(/&amp;/g, "&"));
         }
-        console.log(imageHrefs);
         const redditPostSanitized: FeedPost = {
           id: redditPostUnsanitized.id,
           author: redditPostUnsanitized.author,
           createdTimestamp: redditPostUnsanitized.created_utc,
           title: redditPostUnsanitized.title,
-          contentText: redditPostUnsanitized.selftext,
+          contentText: redditPostUnsanitized.selftext_html
+            ? he.decode(redditPostUnsanitized.selftext_html)
+            : "",
           positiveResponseCount: redditPostUnsanitized.ups,
           negativeResponseCount: redditPostUnsanitized.downs,
           sourceName: "Reddit",

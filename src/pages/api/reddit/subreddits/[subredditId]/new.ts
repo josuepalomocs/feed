@@ -18,7 +18,7 @@ export default async function handler(
     const { subredditId, after, before, count, limit } = req.query;
     try {
       const redditHttpResponse = await redditHttpClient.get<any>(
-        `r/${subredditId}/hot`,
+        `r/${subredditId}/new`,
         { params: { after, before, count, limit } }
       );
       res.status(200).json(redditHttpResponse.data);

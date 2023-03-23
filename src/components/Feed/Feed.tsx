@@ -2,7 +2,7 @@ import FeedPost from "@/components/Feed/FeedPost";
 import useRedditPosts from "@/hooks/useRedditPosts";
 
 export default function Feed() {
-  const { redditPosts } = useRedditPosts("ebay");
+  const { redditPosts } = useRedditPosts("chatgpt");
 
   function renderFeed() {
     if (!redditPosts.length) return <span className="">Feed empty</span>;
@@ -24,7 +24,6 @@ export default function Feed() {
 
   return (
     <div className="pb-4">
-      <h2 className="px-4 mb-4 font-bold text-neutral-400">March 21, 2023</h2>
       <div className="">{renderFeed()}</div>
     </div>
   );

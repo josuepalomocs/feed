@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { BoltIcon as BoltIconOutline } from "@heroicons/react/24/outline";
+import { DocumentTextIcon as DocumentTextIconOutline } from "@heroicons/react/24/outline";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  BoltIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/20/solid";
 import { FeedPost as IFeedPost, FeedPostContentView } from "../../../types";
 import fromUnixTime from "date-fns/fromUnixTime";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 import differenceInHours from "date-fns/differenceInHours";
 import axios from "axios";
+import { differenceInDays, differenceInYears } from "date-fns";
 
 interface FeedPostProps {
   data: IFeedPost;
@@ -51,21 +52,17 @@ export default function FeedPost({ data }: FeedPostProps) {
     }
   }, [feedPostContentView, isContentListLoaded]);
 
-  console.log(contentList);
-
   function getFeedPostAge(creationTimestamp: number) {
     const presentDate = new Date();
     const creationDate = fromUnixTime(creationTimestamp);
+    const commentAgeInYears = differenceInYears(presentDate, creationDate);
+    const commentAgeInDays = differenceInDays(presentDate, creationDate);
+    const commentAgeInHours = differenceInHours(presentDate, creationDate);
     const commentAgeInMinutes = differenceInMinutes(presentDate, creationDate);
-    if (commentAgeInMinutes >= 60) {
-      const commentAgeInHours = differenceInHours(presentDate, creationDate);
-      return commentAgeInHours > 1
-        ? `${commentAgeInHours}hrs ago`
-        : `${commentAgeInHours}hr ago`;
-    }
-    return commentAgeInMinutes > 1
-      ? `${commentAgeInMinutes}mins ago`
-      : `${commentAgeInMinutes}min ago`;
+    if (commentAgeInYears) return `${commentAgeInYears}yr ago`;
+    if (commentAgeInDays) return `${commentAgeInDays}d ago`;
+    if (commentAgeInHours) return `${commentAgeInHours}hr ago`;
+    if (commentAgeInMinutes) return `${commentAgeInMinutes}min ago`;
   }
 
   return (
@@ -90,10 +87,14 @@ export default function FeedPost({ data }: FeedPostProps) {
             );
           }}
         >
-          {feedPostContentView === "contentText" ? (
-            <BoltIconOutline className="w-[20px] h-[20px] text-blue-400" />
-          ) : (
-            <BoltIcon className="w-[20px] h-[20px] text-blue-400" />
+          {contentText && (
+            <>
+              {feedPostContentView === "contentText" ? (
+                <DocumentTextIconOutline className="w-[20px] h-[20px] text-blue-400" />
+              ) : (
+                <DocumentTextIcon className="w-[20px] h-[20px] text-blue-400" />
+              )}
+            </>
           )}
         </button>
       </div>
@@ -104,8 +105,13 @@ export default function FeedPost({ data }: FeedPostProps) {
         <h4 className="font-bold text-lg">{contentList[0]}</h4>
       )}
       {feedPostContentView === "contentText" && (
-        <div className="flex flex-col space-y-2">
-          <p>{contentText}</p>
+        <div className="">
+          <div
+            className="[&>*>*]:mb-2"
+            dangerouslySetInnerHTML={{
+              __html: contentText!,
+            }}
+          />
           <div className="">
             {imageHrefs?.length ? (
               <img src={imageHrefs[0]} className="rounded" />
@@ -113,6 +119,11 @@ export default function FeedPost({ data }: FeedPostProps) {
               <></>
             )}
           </div>
+        </div>
+      )}
+      {!contentList.length && feedPostContentView === "contentList" && (
+        <div className="flex justify-center items-center h-32">
+          <span className="h-8 w-8 block rounded-full border-4 border-t-blue-400 animate-spin" />
         </div>
       )}
       {contentList && feedPostContentView === "contentList" && (
