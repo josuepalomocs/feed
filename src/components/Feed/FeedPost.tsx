@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BoltIcon as BoltIconOutline } from "@heroicons/react/24/outline";
 import {
@@ -10,7 +10,7 @@ import { FeedPost as IFeedPost, FeedPostContentView } from "../../../types";
 import fromUnixTime from "date-fns/fromUnixTime";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 import differenceInHours from "date-fns/differenceInHours";
-import Image from "next/image";
+import axios from "axios";
 
 interface FeedPostProps {
   data: IFeedPost;
@@ -22,7 +22,6 @@ export default function FeedPost({ data }: FeedPostProps) {
     createdTimestamp,
     title,
     contentText,
-    contentList,
     positiveResponseCount,
     negativeResponseCount,
     sourceName,
@@ -31,6 +30,28 @@ export default function FeedPost({ data }: FeedPostProps) {
   } = data;
   const [feedPostContentView, setFeedPostContentView] =
     useState<FeedPostContentView>("contentText");
+  const [contentList, setContentList] = useState<string[]>([]);
+  const [isContentListLoaded, setIsContentListLoaded] = useState(false);
+  useEffect(() => {
+    async function fetchContentList(): Promise<string[]> {
+      const response = await axios.post("/api/openai/text-completions", {
+        redditPostTitle: title || "",
+        redditPostContent: contentText || "",
+      });
+      return response.data;
+    }
+
+    if (feedPostContentView === "contentList" && !isContentListLoaded) {
+      fetchContentList()
+        .then((contentList) => {
+          setContentList(contentList);
+          setIsContentListLoaded(true);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [feedPostContentView, isContentListLoaded]);
+
+  console.log(contentList);
 
   function getFeedPostAge(creationTimestamp: number) {
     const presentDate = new Date();
@@ -76,7 +97,12 @@ export default function FeedPost({ data }: FeedPostProps) {
           )}
         </button>
       </div>
-      {title && <h4 className="font-bold text-lg">{title}</h4>}
+      {title && feedPostContentView === "contentText" && (
+        <h4 className="font-bold text-lg">{title}</h4>
+      )}
+      {contentList && feedPostContentView === "contentList" && (
+        <h4 className="font-bold text-lg">{contentList[0]}</h4>
+      )}
       {feedPostContentView === "contentText" && (
         <div className="flex flex-col space-y-2">
           <p>{contentText}</p>
@@ -92,14 +118,19 @@ export default function FeedPost({ data }: FeedPostProps) {
       {contentList && feedPostContentView === "contentList" && (
         <ul className="flex flex-col space-y-2">
           {contentList.map((contentListItem, index) => {
-            return (
-              <li key={contentListItem} className="flex items-start space-x-2">
-                <div className="text-neutral-500">{index + 1}</div>
-                <div>
-                  <div>{contentListItem}</div>
-                </div>
-              </li>
-            );
+            if (index != 0) {
+              return (
+                <li
+                  key={contentListItem}
+                  className="flex items-start space-x-3"
+                >
+                  <div className="text-neutral-500">{index}</div>
+                  <div>
+                    <div>{contentListItem}</div>
+                  </div>
+                </li>
+              );
+            }
           })}
         </ul>
       )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FeedPost } from "../../../../types";
 import axios from "axios";
-import { serverConfigVariables } from "@/config";
+import { serverConfigVariables } from "@/config/environmentVariables";
 import useRedditPosts from "@/hooks/useRedditPosts";
 
 const serverHttpClient = axios.create({

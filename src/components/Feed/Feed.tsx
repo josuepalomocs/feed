@@ -2,7 +2,7 @@ import FeedPost from "@/components/Feed/FeedPost";
 import useRedditPosts from "@/hooks/useRedditPosts";
 
 export default function Feed() {
-  const { redditPosts } = useRedditPosts("chatgpt");
+  const { redditPosts } = useRedditPosts("ebay");
 
   function renderFeed() {
     if (!redditPosts.length) return <span className="">Feed empty</span>;

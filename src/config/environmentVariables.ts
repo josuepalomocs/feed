@@ -13,6 +13,9 @@ if (!process.env.REDDIT_USERNAME)
 if (!process.env.REDDIT_PASSWORD)
   throw new Error(formatErrorMessage("REDDIT_PASSWORD"));
 
+if (!process.env.OPEN_AI_API_KEY)
+  throw new Error(formatErrorMessage("OPEN_AI_API_KEY"));
+
 if (!process.env.NEXT_PUBLIC_SERVER_BASE_URL)
   throw new Error(formatErrorMessage("NEXT_PUBLIC_SERVER_BASE_URL"));
 
@@ -26,6 +29,8 @@ const redditAppAccessToken: string = process.env.REDDIT_APP_ACCESS_TOKEN;
 const redditUsername: string = process.env.REDDIT_USERNAME;
 const redditPassword: string = process.env.REDDIT_PASSWORD;
 
+const openAiApiKey: string = process.env.OPEN_AI_API_KEY;
+
 const serverBaseUrl: string = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
 
 export const redditAppConfigVariables = {
@@ -38,4 +43,8 @@ export const redditAppConfigVariables = {
 
 export const serverConfigVariables = {
   serverBaseUrl,
+};
+
+export const openAiConfigVariables = {
+  openAiApiKey,
 };

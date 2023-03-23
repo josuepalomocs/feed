@@ -8,7 +8,7 @@ export default function useRedditPosts(subredditId: string) {
   useEffect(() => {
     async function fetchRedditPosts(): Promise<FeedPost[]> {
       const response = await axios.get(
-        `api/reddit/subreddits/${subredditId}/new`
+        `api/reddit/subreddits/${subredditId}/hot`
       );
       const redditPostsUnsanitized = response.data.data.children;
       console.log(redditPostsUnsanitized);

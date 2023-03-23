@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { redditAppConfigVariables } from "@/config";
+import { redditAppConfigVariables } from "@/config/environmentVariables";
 
 const { redditAppAccessToken } = redditAppConfigVariables;
 
